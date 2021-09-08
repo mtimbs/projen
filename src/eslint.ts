@@ -3,6 +3,7 @@ import { Component } from './component';
 import { JsonFile } from './json';
 import { NodeProject } from './node-project';
 
+
 export interface EslintOptions {
   /**
    * Path to `tsconfig.json` which should be used by eslint.
@@ -47,6 +48,18 @@ export interface EslintOptions {
    * @default false
    */
   readonly prettier?: boolean;
+
+  /**
+   * Enable import alias for module paths
+   * @default undefined
+   */
+  readonly aliasMap?: [string, string][];
+
+  /**
+   * Enable import alias for module paths
+   * @default undefined
+   */
+  readonly aliasExtensions?: string[];
 }
 
 /**
@@ -305,6 +318,12 @@ export class Eslint extends Component {
           '@typescript-eslint/parser': ['.ts', '.tsx'],
         },
         'import/resolver': {
+          ...( options.aliasMap && options.aliasExtensions && {
+            alias: {
+              map: options.aliasMap,
+              extensions: options.aliasExtensions,
+            },
+          }),
           node: {},
           typescript: {
             project: tsconfig,
