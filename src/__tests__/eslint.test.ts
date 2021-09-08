@@ -60,3 +60,54 @@ describe('prettier', () => {
     expect(eslint.rules).toHaveProperty('prettier/prettier', ['error']);
   });
 });
+
+describe('alias', () => {
+  test('snapshot', () => {
+    // GIVEN
+    const project = new NodeProject({
+      outdir: mkdtemp(),
+      name: 'test',
+      logging: { level: LogLevel.OFF },
+      defaultReleaseBranch: 'master',
+    });
+
+
+    // WHEN
+    new Eslint(project, {
+      dirs: ['src'],
+
+    });
+
+    // THEN
+    expect(synthSnapshot(project)['.eslintrc.json']).toMatchSnapshot();
+  });
+
+  test('custom config', () => {
+    // GIVEN
+    const project = new NodeProject({
+      outdir: mkdtemp(),
+      name: 'test',
+      logging: { level: LogLevel.OFF },
+      defaultReleaseBranch: 'master',
+    });
+
+
+    // WHEN
+    const eslint = new Eslint(project, {
+      dirs: ['src'],
+      aliasMap: {
+        '@src': './src',
+        '@foo': './src/foo',
+      },
+      aliasExtensions: ['.ts', '.js'],
+    });
+
+    // THEN
+    expect(eslint.config.settings['import/resolver'].alias).toHaveProperty('map', [
+      ['@src', './src'],
+      ['@foo', './src/foo'],
+    ]);
+    expect(eslint.config.settings['import/resolver'].alias).toHaveProperty('extensions', ['.ts', '.js']);
+  });
+
+});
