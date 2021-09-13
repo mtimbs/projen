@@ -95,14 +95,18 @@ describe('alias', () => {
     // WHEN
     const eslint = new Eslint(project, {
       dirs: ['src'],
-      aliasMap: [
-        ['@src', './src'],
-      ],
+      aliasMap: {
+        '@src': './src',
+        '@foo': './src/foo',
+      },
       aliasExtensions: ['.ts', '.js'],
     });
 
     // THEN
-    expect(eslint.config.settings['import/resolver'].alias).toHaveProperty('map', [['@src', './src']]);
+    expect(eslint.config.settings['import/resolver'].alias).toHaveProperty('map', [
+      ['@src', './src'],
+      ['@foo', './src/foo'],
+    ]);
     expect(eslint.config.settings['import/resolver'].alias).toHaveProperty('extensions', ['.ts', '.js']);
   });
 

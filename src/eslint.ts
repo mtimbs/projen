@@ -53,7 +53,7 @@ export interface EslintOptions {
    * Enable import alias for module paths
    * @default undefined
    */
-  readonly aliasMap?: [string, string][];
+  readonly aliasMap?: { [key: string]: string };
 
   /**
    * Enable import alias for module paths
@@ -119,6 +119,10 @@ export class Eslint extends Component {
         'eslint-plugin-prettier',
         'eslint-config-prettier',
       );
+    }
+
+    if (options.aliasMap) {
+      project.addDevDeps('eslint-import-resolver-alias');
     }
 
     const devdirs = options.devdirs ?? [];
@@ -320,7 +324,7 @@ export class Eslint extends Component {
         'import/resolver': {
           ...( options.aliasMap && options.aliasExtensions && {
             alias: {
-              map: options.aliasMap,
+              map: Object.entries(options.aliasMap).map(([k, v]) => [k, v]),
               extensions: options.aliasExtensions,
             },
           }),
